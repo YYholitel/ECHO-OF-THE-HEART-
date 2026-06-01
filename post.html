@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>回声心旅 - 终章</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap');
+
+    :root {
+      --dark-abyss: #030407;
+      --light-ray: rgba(255, 230, 190, 0.45);
+      --gold: #e6c587;
+      --ink: #e0dacc;
+    }
+
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .poster-canvas {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      aspect-ratio: 3 / 4;
+      background: linear-gradient(to bottom, #050711, var(--dark-abyss));
+      overflow: hidden;
+    }
+
+    /* 纯净光束 */
+    .light-beam {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 180%;
+      height: 60%;
+      background: linear-gradient(to bottom, var(--light-ray) 0%, rgba(255, 230, 190, 0) 100%);
+      clip-path: polygon(25% 0, 75% 0, 55% 100%, 45% 100%);
+      z-index: 1;
+      filter: blur(15px);
+    }
+
+    /* 线条人物 SVG (无填充、纯描边，保持流畅) */
+    .character-silhouette {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 170px;
+      height: 260px;
+      z-index: 4;
+    }
+
+    /* 标题排版：极致克制 */
+    .credits-wrap {
+      position: absolute;
+      top: 5%;
+      width: 100%;
+      text-align: center;
+      z-index: 6;
+      color: var(--ink);
+    }
+
+    .poster-title {
+      font-size: 28px;
+      letter-spacing: 12px;
+      font-weight: 300;
+      margin: 0;
+    }
+
+    .echo-bg {
+      position: absolute;
+      top: -5%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cinzel Decorative', cursive;
+      font-size: 100px;
+      color: rgba(255, 255, 255, 0.05);
+      z-index: 7;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="poster-canvas">
+    <div class="light-beam"></div>
+    <div class="echo-bg">ECHO</div>
+
+    <div class="credits-wrap">
+      <h1 class="poster-title">听见光，治愈心。</h1>
+    </div>
+
+    <div class="character-silhouette">
+      <svg viewBox="0 0 100 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" stroke="rgba(255, 230, 190, 0.85)" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M 35 35 C 35 15, 65 15, 65 35 C 70 50, 70 55, 60 60 C 50 65, 40 60, 35 55 C 30 50, 30 45, 35 35 Z" />
+          <path d="M 38 60 C 25 65, 25 80, 25 100 L 75 100 C 75 80, 75 65, 62 60 Z" />
+          <path d="M 26 80 Q 50 85 74 80 M 25 90 Q 50 95 75 90" />
+          <path d="M 35 100 L 35 125 M 45 125 L 45 100" />
+          <path d="M 55 100 L 55 125 M 65 125 L 65 100" />
+          <ellipse cx="40" cy="127" rx="8" ry="4" />
+          <ellipse cx="60" cy="127" rx="8" ry="4" />
+          <path d="M 35 65 C 20 50, 20 40, 25 35" />
+          <path d="M 65 65 C 80 50, 80 40, 75 35" />
+        </g>
+      </svg>
+    </div>
+  </main>
+</body>
+
+</html>

@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ECHO · 裂空终章 | 太阳诞生与诗卷</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: #000000;
+      font-family: 'Patrick Hand', 'LXGW WenKai', 'Ma Shan Zheng', 'Microsoft YaHei', cursive;
+    }
+
+    canvas {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .mucha-border {
+      position: fixed;
+      inset: 20px;
+      pointer-events: none;
+      z-index: 20;
+      border: 1.5px solid rgba(255, 220, 150, 0.3);
+      border-radius: 52px 36px 60px 44px;
+      transition: opacity 1.5s ease;
+    }
+
+    .corner {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      pointer-events: none;
+      opacity: 0.22;
+      z-index: 21;
+      transition: opacity 1s;
+    }
+
+    #lt {
+      left: 18px;
+      top: 18px;
+    }
+
+    #rt {
+      right: 18px;
+      top: 18px;
+      transform: scaleX(-1);
+    }
+
+    #lb {
+      left: 18px;
+      bottom: 18px;
+      transform: scaleY(-1);
+    }
+
+    #rb {
+      right: 18px;
+      bottom: 18px;
+      transform: scale(-1);
+    }
+
+    .title-group {
+      position: absolute;
+      top: 24px;
+      width: 100%;
+      text-align: center;
+      z-index: 25;
+      pointer-events: none;
+      filter: drop-shadow(1px 1px 0 rgba(255, 255, 255, .1));
+      transform: rotate(-0.3deg);
+    }
+
+    #title {
+      font-size: 100px;
+      font-weight: 700;
+      letter-spacing: 10px;
+      background: linear-gradient(135deg, #fff3cf, #ffe0a3);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 2px 2px 0 rgba(255, 220, 120, .2);
+    }
+
+    #subtitle {
+      font-size: 20px;
+      letter-spacing: 4px;
+      color: rgba(255, 235, 180, 0.75);
+      margin-top: -8px;
+    }
+
+    .ui-panel {
+      position: absolute;
+      left: 24px;
+      top: 24px;
+      width: 240px;
+      padding: 16px 18px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 215, 140, 0.35);
+      z-index: 30;
+      transition: opacity 1s;
+    }
+
+    .ui-panel h3 {
+      font-size: 26px;
+      margin-bottom: 10px;
+      color: #FFE6B3;
+    }
+
+    .stat {
+      font-size: 18px;
+      margin: 8px 0;
+      color: #FFF2DF;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed rgba(255, 225, 150, 0.3);
+    }
+
+    #dialog {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 660px;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(20px);
+      border-radius: 48px;
+      padding: 18px 28px;
+      border: 1px solid rgba(255, 210, 130, 0.5);
+      color: #FFF7E8;
+      font-size: 20px;
+      text-align: center;
+      z-index: 30;
+      transition: opacity 0.8s;
+      font-family: 'Patrick Hand', monospace;
+    }
+
+    #hint {
+      position: absolute;
+      right: 24px;
+      top: 24px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-size: 16px;
+      color: #FFE2AE;
+      border: 1px solid rgba(255, 200, 100, 0.4);
+      z-index: 30;
+    }
+
+    @media (max-width: 700px) {
+      #title {
+        font-size: 52px;
+        letter-spacing: 6px;
+      }
+
+      .ui-panel {
+        transform: scale(0.8);
+        left: -8px;
+        top: -8px;
+      }
+
+      #dialog {
+        width: 90%;
+        font-size: 16px;
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="mucha-border"></div>
+  <svg class="corner" id="lt" viewBox="0 0 200 200">
+    <path d="M25 180 C70 85 95 60 180 25" stroke="#FFE29A" fill="none" stroke-width="2.5" />
+    <path d="M38 155 C75 100 105 75 160 38" stroke="#FFE29A" fill="none" stroke-width="1.5" />
+  </svg>
+  <svg class="corner" id="rt" viewBox="0 0 200 200">
+    <path d="M25 180 C70 85 95 60 180 25" stroke="#FFE29A" fill="none" stroke-width="2.5" />
+    <path d="M38 155 C75 100 105 75 160 38" stroke="#FFE29A" fill="none" stroke-width="1.5" />
+  </svg>
+  <svg class="corner" id="lb" viewBox="0 0 200 200">
+    <path d="M25 180 C70 85 95 60 180 25" stroke="#FFE29A" fill="none" stroke-width="2.5" />
+    <path d="M38 155 C75 100 105 75 160 38" stroke="#FFE29A" fill="none" stroke-width="1.5" />
+  </svg>
+  <svg class="corner" id="rb" viewBox="0 0 200 200">
+    <path d="M25 180 C70 85 95 60 180 25" stroke="#FFE29A" fill="none" stroke-width="2.5" />
+    <path d="M38 155 C75 100 105 75 160 38" stroke="#FFE29A" fill="none" stroke-width="1.5" />
+  </svg>
+
+  <div class="title-group">
+    <div id="title">ECHO</div>
+    <div id="subtitle">裂 空 终 章 · 太 阳 诞 生</div>
+  </div>
+  <div class="ui-panel">
+    <h3>✦ 魂 核 ✦</h3>
+    <div class="stat"><span>回 声</span><span id="echo">0</span></div>
+    <div class="stat"><span>阴 影</span><span id="shadow">5</span></div>
+    <div class="stat"><span>心 境</span><span id="mind">压抑</span></div>
+    <div class="stat"><span>碎 片</span><span id="fragment">0</span><span>/6</span></div>
+  </div>
+  <div id="hint">🕹️ WASD 行走 · ␣ 释放回声</div>
+  <div id="dialog">⚡ 长夜无光，唯有回声引路</div>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    (function () {
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height, animFrame;
+
+      // UI 元素
+      const echoSpan = document.getElementById('echo');
+      const shadowSpan = document.getElementById('shadow');
+      const mindSpan = document.getElementById('mind');
+      const fragSpan = document.getElementById('fragment');
+      const dialogDiv = document.getElementById('dialog');
+
+      // 核心状态
+      let soulProgress = 0;
+      let targetProgress = 0;
+      let fragmentsCollected = 0;
+      const TOTAL_FRAGMENTS = 6;
+      let player = { x: 0, y: 0, speed: 3.8, echoVal: 0, shadowVal: 5 };
+      const keys = { w: false, s: false, a: false, d: false };
+
+      // 粒子系统
+      class EchoParticle {
+        constructor(x, y) { this.x = x; this.y = y; this.r = 8; this.life = 1.0; }
+        update() { this.r += 4.8; this.life -= 0.022; return this.life > 0; }
+        draw() {
+          ctx.save(); ctx.globalAlpha = this.life * 0.8;
+          for (let i = 0; i < 4; i++) {
+            ctx.beginPath();
+            ctx.arc(this.x + (Math.random() - 0.5) * 3, this.y + (Math.random() - 0.5) * 3, this.r + (Math.random() - 0.5) * 4, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(255,235,160,${0.6 + Math.random() * 0.4})`;
+            ctx.lineWidth = 2 + Math.random() * 2.5; ctx.stroke();
+          } ctx.restore();
+        }
+      }
+      let echoes = [];
+      let fragments = [];
+      let butterflyTrails = [];
+      let starDust = [];
+      let lightFeathers = [];
+
+      // 新增花瓣与秋叶 (太阳诞生仪式)
+      let rosePetals = [];
+      let autumnLeaves = [];
+
+      // 终局升华: 太阳诞生，世界沉落
+      let endingActive = false;
+      let sunBirth = 0;          // 0→1 太阳诞生进度
+      let sunPulse = 0;
+      let worldFall = 0;         // 世界向下坠落
+      let enteredDoor = false;   // 是否进入诗卷阶段
+      let poemPhase = 0;         // 0未开始 1诗句滚动 2标题 3等待输入
+      let poemLines = [
+        "你曾穿越漫长的黑夜。",
+        "你曾追赶消逝的回声。",
+        "那些破碎的碎片，",
+        "最终都化成了光。",
+        "伤痕没有消失。",
+        "它们成为了你。",
+        "回声并非来自远方。",
+        "它来自你曾经逃避的地方。",
+        "谢谢你，走到了这里。",
+        "ECHO",
+        "第一章 · 裂空"
+      ];
+      let poemY = 0;
+      let poemSpeed = 0.45;
+      let waitingForInput = false;
+
+      // 剧情事件
+      const storyEvents = [
+        { title: "🌑 沉 渊", text: "黑暗浓稠如墨，你几乎感觉不到自己的存在。", delta: 0.042 },
+        { title: "🌌 裂 痕", text: "一道微光从极远处渗入，你听见自己的脚步声。", delta: 0.072 },
+        { title: "✨ 星 尘", text: "记忆碎片如萤火飘荡，你开始追逐逝去的光。", delta: 0.092 },
+        { title: "🍃 回 响", text: "整个世界开始回应你的呼唤，回声有了形状。", delta: 0.115 },
+        { title: "💫 共 鸣", text: "黑暗不再冰冷，你与破碎的过往和解。", delta: 0.102 },
+        { title: "🔥 燃 空", text: "光芒从撕裂的苍穹倾泻而下，一切沉寂终将破晓。", delta: 0.177 }
+      ];
+      let eventIndex = 0;
+
+      function triggerStory() {
+        if (eventIndex >= storyEvents.length) return;
+        const ev = storyEvents[eventIndex];
+        targetProgress = Math.min(1, targetProgress + ev.delta);
+        dialogDiv.innerHTML = `<b>✦ ${ev.title} ✦</b><br>${ev.text}`;
+        eventIndex++;
+        updateUI();
+      }
+
+      function collectFragment(idx) {
+        if (fragments[idx].collected) return;
+        fragments[idx].collected = true;
+        fragmentsCollected++;
+        for (let i = 0; i < 18; i++) butterflyTrails.push({ x: fragments[idx].x, y: fragments[idx].y, life: 0.96 });
+        updateUI();
+        if (fragmentsCollected <= TOTAL_FRAGMENTS) triggerStory();
+        if (fragmentsCollected === TOTAL_FRAGMENTS) {
+          targetProgress = Math.min(1, targetProgress + 0.22);
+          dialogDiv.innerHTML = "<b>☀ 天 裂 之 刻 ☀</b><br>光核凝聚，太阳即将诞生。";
+          endingActive = true;
+        }
+      }
+
+      function updateUI() {
+        echoSpan.innerText = player.echoVal;
+        shadowSpan.innerText = player.shadowVal;
+        fragSpan.innerText = fragmentsCollected;
+        let mindText = "压抑";
+        if (soulProgress >= 0.96) mindText = "裂空";
+        else if (soulProgress >= 0.78) mindText = "共鸣";
+        else if (soulProgress >= 0.55) mindText = "微明";
+        else if (soulProgress >= 0.3) mindText = "裂隙";
+        mindSpan.innerText = mindText;
+      }
+
+      // 平滑背景 (五幕渐变)
+      function getSmoothBackgroundGradient(t) {
+        t = Math.min(1, Math.max(0, t));
+        const stops = [
+          { pos: 0.0, top: [0, 0, 0], bottom: [1, 3, 8] }, { pos: 0.22, top: [1, 3, 10], bottom: [6, 16, 34] },
+          { pos: 0.38, top: [8, 20, 40], bottom: [25, 45, 70] }, { pos: 0.55, top: [35, 55, 85], bottom: [95, 105, 115] },
+          { pos: 0.72, top: [100, 95, 85], bottom: [190, 160, 100] }, { pos: 0.85, top: [210, 185, 120], bottom: [245, 215, 150] },
+          { pos: 1.0, top: [255, 248, 210], bottom: [255, 250, 230] }
+        ];
+        let i1 = 0, i2 = 0;
+        for (let i = 0; i < stops.length - 1; i++) if (t >= stops[i].pos && t <= stops[i + 1].pos) { i1 = i; i2 = i + 1; break; }
+        let p = (t - stops[i1].pos) / (stops[i2].pos - stops[i1].pos);
+        let topR = stops[i1].top[0] + (stops[i2].top[0] - stops[i1].top[0]) * p;
+        let topG = stops[i1].top[1] + (stops[i2].top[1] - stops[i1].top[1]) * p;
+        let topB = stops[i1].top[2] + (stops[i2].top[2] - stops[i1].top[2]) * p;
+        let botR = stops[i1].bottom[0] + (stops[i2].bottom[0] - stops[i1].bottom[0]) * p;
+        let botG = stops[i1].bottom[1] + (stops[i2].bottom[1] - stops[i1].bottom[1]) * p;
+        let botB = stops[i1].bottom[2] + (stops[i2].bottom[2] - stops[i1].bottom[2]) * p;
+        return {
+          top: `rgb(${Math.floor(topR)},${Math.floor(topG)},${Math.floor(topB)})`,
+          bottom: `rgb(${Math.floor(botR)},${Math.floor(botG)},${Math.floor(botB)})`
+        };
+      }
+
+      function drawBackground() {
+        let t = Math.min(1, Math.max(0, soulProgress));
+        const col = getSmoothBackgroundGradient(t);
+        const grad = ctx.createLinearGradient(0, height, 0, 0);
+        grad.addColorStop(0, col.bottom); grad.addColorStop(1, col.top);
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, width, height);
+        ctx.globalAlpha = 0.08;
+        for (let i = 0; i < 500; i++) { ctx.fillStyle = `rgba(255,240,180,${Math.random() * 0.35})`; ctx.fillRect(Math.random() * width, Math.random() * height, 1.2, 1.2); }
+        ctx.globalAlpha = 1;
+      }
+
+      function drawRippedSky() {
+        let t = Math.min(1, Math.max(0, soulProgress));
+        const cx = width / 2; const baseY = height * 0.38;
+        let crackW = 15 + t * 400;
+        ctx.save();
+        const beamGrad = ctx.createLinearGradient(0, baseY + 100, 0, 0);
+        beamGrad.addColorStop(0, `rgba(255, 240, 170, ${0.05 + t * 0.48})`);
+        beamGrad.addColorStop(1, `rgba(255, 255, 210, ${0.2 + t * 0.85})`);
+        ctx.fillStyle = beamGrad; ctx.globalAlpha = Math.min(0.94, 0.1 + t * 0.8);
+        ctx.beginPath();
+        ctx.moveTo(cx - crackW * 0.7, baseY + 70); ctx.lineTo(cx + crackW * 0.7, baseY + 70);
+        ctx.lineTo(cx + crackW * 0.38, 0); ctx.lineTo(cx - crackW * 0.38, 0); ctx.fill();
+        ctx.globalAlpha = 0.45 + t * 0.45; ctx.strokeStyle = "#FFD68F";
+        for (let i = 0; i < 8; i++) { roughLine(cx - crackW * 0.32 + Math.sin(i) * 12, baseY + 40 + i * 23, cx + crackW * 0.32 + Math.cos(i) * 12, baseY + 30 + i * 21, "#FFE6A0", 2.2); }
+        if (t > 0.65) {
+          ctx.globalAlpha = 0.42;
+          for (let i = 0; i < 45; i++) {
+            ctx.beginPath(); ctx.moveTo(cx - 80 + Math.sin(i) * 40, baseY - 40 + i * 12); ctx.lineTo(cx + 70 + Math.cos(i) * 35, baseY - 20 + i * 14);
+            ctx.strokeStyle = `rgba(255,235,140,0.7)`; ctx.lineWidth = 1.8; ctx.stroke();
+          }
+        }
+        ctx.restore();
+      }
+
+      function roughLine(x1, y1, x2, y2, col, w = 2) {
+        ctx.strokeStyle = col;
+        for (let i = 0; i < 3; i++) {
+          ctx.lineWidth = w + Math.random() * 1.5;
+          ctx.beginPath(); ctx.moveTo(x1 + (Math.random() - 0.5) * 2, y1 + (Math.random() - 0.5) * 2);
+          ctx.lineTo(x2 + (Math.random() - 0.5) * 2.5, y2 + (Math.random() - 0.5) * 2); ctx.stroke();
+        }
+      }
+      function roughCircle(x, y, r, col, w = 2) {
+        ctx.strokeStyle = col;
+        for (let i = 0; i < 4; i++) {
+          ctx.lineWidth = w + Math.random() * 1.2;
+          ctx.beginPath(); ctx.arc(x + (Math.random() - 0.5) * 2.2, y + (Math.random() - 0.5) * 2.2, r + (Math.random() - 0.5) * 2, 0, Math.PI * 2); ctx.stroke();
+        }
+      }
+
+      function initStardust() {
+        starDust = [];
+        for (let i = 0; i < 240; i++) { starDust.push({ x: Math.random() * width, y: Math.random() * height, size: 1 + Math.random() * 2.5, alpha: 0.08 + Math.random() * 0.35, vy: 0.15 + Math.random() * 0.6 }); }
+      }
+      function updateStardust() {
+        for (let s of starDust) {
+          s.y -= s.vy * 0.28; if (s.y < -20) s.y = height + 20;
+          let fade = s.alpha * (1 - soulProgress * 0.68);
+          ctx.fillStyle = `rgba(210, 225, 245, ${fade})`;
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+
+      function drawFragmentsAndTrails() {
+        for (let f of fragments) {
+          if (f.collected) continue;
+          let puls = Date.now() * 0.005 + (f.pulseOff || 0);
+          let r = 11 + Math.sin(puls) * 3.8;
+          ctx.save(); ctx.fillStyle = "#FDE7B0"; ctx.shadowBlur = 12; ctx.shadowColor = "#F4BC6A";
+          ctx.beginPath(); ctx.moveTo(f.x, f.y - r); ctx.lineTo(f.x + r * 0.7, f.y); ctx.lineTo(f.x, f.y + r); ctx.lineTo(f.x - r * 0.7, f.y); ctx.closePath(); ctx.fill();
+          ctx.restore();
+        }
+        for (let i = butterflyTrails.length - 1; i >= 0; i--) {
+          let tr = butterflyTrails[i];
+          ctx.beginPath(); ctx.arc(tr.x, tr.y, 2.8, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,205,100,${tr.life * 0.7})`; ctx.fill();
+          tr.life -= 0.022; if (tr.life <= 0) butterflyTrails.splice(i, 1);
+        }
+      }
+
+      function addFeathers() {
+        let featherRate = (endingActive && fragmentsCollected === TOTAL_FRAGMENTS) ? 0.7 : 0.35;
+        if (Math.random() < featherRate) {
+          lightFeathers.push({ x: width / 2 + (Math.random() - 0.5) * 500, y: height * 0.05 + Math.random() * 80, angle: Math.random() * Math.PI * 2, life: 1, speedY: 1.4 + Math.random() * 1.6 });
+        }
+        for (let i = lightFeathers.length - 1; i >= 0; i--) {
+          let ft = lightFeathers[i];
+          ft.y += (ft.speedY || 1.6); ft.x += Math.sin(ft.angle) * 0.9; ft.life -= 0.007;
+          ctx.save(); ctx.globalAlpha = ft.life * 0.85; ctx.fillStyle = "#FFE6B0";
+          ctx.beginPath(); ctx.moveTo(ft.x, ft.y - 5); ctx.lineTo(ft.x + 4, ft.y + 2); ctx.lineTo(ft.x, ft.y + 7); ctx.lineTo(ft.x - 4, ft.y + 2); ctx.fill();
+          ctx.restore();
+          if (ft.life <= 0 || ft.y > height + 60) lightFeathers.splice(i, 1);
+        }
+      }
+
+      // 蔷薇花瓣与秋叶 (太阳诞生意象)
+      function addRoseAndLeaves() {
+        if (sunBirth < 0.72) return;
+        if (Math.random() < 0.09) {
+          rosePetals.push({ x: Math.random() * width, y: -15, vx: (Math.random() - 0.5) * 0.9, vy: 0.4 + Math.random() * 0.9, rot: Math.random() * 6.28, life: 1 });
+        }
+        if (Math.random() < 0.06) {
+          autumnLeaves.push({ x: Math.random() * width, y: -15, vx: (Math.random() - 0.5) * 1.3, vy: 0.5 + Math.random() * 0.8, rot: Math.random() * 6.28, life: 1 });
+        }
+        for (let i = rosePetals.length - 1; i >= 0; i--) {
+          let p = rosePetals[i];
+          p.x += p.vx; p.y += p.vy; p.rot += 0.012; p.life -= 0.0016;
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+          ctx.globalAlpha = p.life * 0.4; ctx.fillStyle = "#F8D0D8";
+          ctx.beginPath(); ctx.ellipse(0, 0, 8, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+          if (p.life <= 0) rosePetals.splice(i, 1);
+        }
+        for (let i = autumnLeaves.length - 1; i >= 0; i--) {
+          let l = autumnLeaves[i];
+          l.x += l.vx; l.y += l.vy; l.rot += 0.016; l.life -= 0.0014;
+          ctx.save(); ctx.translate(l.x, l.y); ctx.rotate(l.rot);
+          ctx.globalAlpha = l.life * 0.35; ctx.fillStyle = "#E7BA76";
+          ctx.beginPath(); ctx.ellipse(0, 0, 11, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+          if (l.life <= 0) autumnLeaves.splice(i, 1);
+        }
+      }
+
+      function drawPlayer() {
+        let x = player.x, y = player.y;
+        ctx.save();
+        if (enteredDoor || (endingActive && fragmentsCollected === TOTAL_FRAGMENTS && sunBirth > 0.6)) {
+          ctx.shadowBlur = 48; ctx.shadowColor = "#FFF2B5"; ctx.fillStyle = "#FFFCE8";
+        } else if (soulProgress > 0.85) { ctx.shadowBlur = 28; ctx.shadowColor = "#FFD89C"; ctx.fillStyle = "#131F2C"; }
+        else ctx.fillStyle = "#131F2C";
+        ctx.beginPath(); ctx.ellipse(x, y - 18, 18, 24, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(x - 28, y - 6); ctx.lineTo(x + 28, y - 6); ctx.lineTo(x + 40, y + 55); ctx.lineTo(x - 40, y + 55); ctx.fill();
+        roughCircle(x, y - 38, 20, enteredDoor ? "#FFF3CF" : "#C0C6C9", 2.2);
+        if (enteredDoor) { ctx.beginPath(); ctx.moveTo(x, y - 58); ctx.lineTo(x - 28, y - 30); ctx.lineTo(x + 28, y - 30); ctx.fill(); }
+        ctx.restore();
+      }
+
+      // 太阳诞生 (取代门)
+      function drawBirthSun() {
+        if (!endingActive) return;
+        sunBirth += (1 - sunBirth) * 0.0045;
+        let t = Math.min(1, sunBirth);
+        let ease = t * t * t * (t * (6 * t - 15) + 10);
+        let cx = width / 2, cy = height * 0.38;
+        let radius = 22 + ease * 920;
+        sunPulse += 0.022;
+
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+        grad.addColorStop(0, "rgba(255,255,245,1)");
+        grad.addColorStop(0.28, "rgba(255,240,180,0.96)");
+        grad.addColorStop(1, "rgba(255,220,100,0)");
+        ctx.save();
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2); ctx.fill();
+
+        // 日冕光晕
+        for (let i = 0; i < 36; i++) {
+          let angle = (Math.PI * 2 / 36) * i + sunPulse * 0.18;
+          let len = radius * (1.12 + Math.sin(sunPulse + i) * 0.13);
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(angle) * radius * 0.65, cy + Math.sin(angle) * radius * 0.65);
+          ctx.lineTo(cx + Math.cos(angle) * len, cy + Math.sin(angle) * len);
+          ctx.strokeStyle = "rgba(255,240,180,0.18)";
+          ctx.lineWidth = 4.5;
+          ctx.stroke();
+        }
+        // 最终吞没白屏
+        if (t > 0.92) {
+          let alpha = Math.min(1, (t - 0.92) / 0.08);
+          ctx.fillStyle = `rgba(255,255,245,${alpha * 0.96})`;
+          ctx.fillRect(0, 0, width, height);
+          if (t > 0.985 && !enteredDoor) {
+            enteredDoor = true;
+            poemPhase = 1;
+            poemY = height;
+            dialogDiv.style.opacity = 0;
+          }
+        }
+        ctx.restore();
+      }
+
+      // 世界沉落 (所有元素向下坠落)
+      let fallOffset = 0;
+      function updateWorldFall() {
+        if (!endingActive || enteredDoor || fragmentsCollected < TOTAL_FRAGMENTS) return;
+        let distToCenter = Math.hypot(player.x - width / 2, player.y - height * 0.45);
+        if (distToCenter < 240 && sunBirth > 0.35) {
+          fallOffset += 0.006;
+          player.y += 1.1;
+          for (let f of fragments) if (!f.collected) f.y += 0.8;
+          for (let p of starDust) p.y += 1.2;
+          for (let ft of lightFeathers) ft.y += 1.0;
+        }
+        fallOffset = Math.min(1.2, fallOffset);
+      }
+
+      // 滚动诗卷
+      function drawPoemScroll() {
+        if (poemPhase === 0) return;
+        ctx.fillStyle = `rgba(0,0,0,${Math.min(0.88, poemPhase === 1 ? 0.68 : 0.92)})`;
+        ctx.fillRect(0, 0, width, height);
+        ctx.font = `30px 'Patrick Hand'`; ctx.fillStyle = "#FFF5DD";
+        ctx.textAlign = "center";
+        for (let i = 0; i < poemLines.length; i++) {
+          let y = poemY + i * 62;
+          if (y > 50 && y < height - 40) ctx.fillText(poemLines[i], width / 2, y);
+        }
+        poemY -= poemSpeed;
+        if (poemY < -poemLines.length * 72 && poemPhase === 1) {
+          poemPhase = 2;
+          setTimeout(() => { poemPhase = 3; waitingForInput = true; dialogDiv.innerHTML = "✨ 按任意键 继续 ✨"; dialogDiv.style.opacity = 1; }, 1800);
+        }
+        if (poemPhase === 2) {
+          ctx.font = `66px 'Patrick Hand'`; ctx.fillStyle = "#FFE5B0";
+          ctx.fillText("ECHO", width / 2, height / 2 - 45);
+          ctx.font = `28px 'Patrick Hand'`; ctx.fillStyle = "#DBAE6A";
+          ctx.fillText("裂空终章 · 心之光", width / 2, height / 2 + 45);
+        }
+        if (poemPhase === 3 && waitingForInput) {
+          ctx.font = `24px 'Patrick Hand'`; ctx.fillStyle = "#FFF7DA";
+          ctx.fillText("✦ 按任意键 继续旅程 ✦", width / 2, height - 70);
+        }
+      }
+
+      function updateProgress() {
+        if (targetProgress > soulProgress && !enteredDoor) {
+          soulProgress = Math.min(targetProgress, soulProgress + 0.0012);
+          updateUI();
+        }
+      }
+      function updateMovement() {
+        if (enteredDoor) return;
+        if (keys.w) player.y -= player.speed;
+        if (keys.s) player.y += player.speed;
+        if (keys.a) player.x -= player.speed;
+        if (keys.d) player.x += player.speed;
+        player.x = Math.min(width - 55, Math.max(55, player.x));
+        player.y = Math.min(height - 75, Math.max(height * 0.44, player.y));
+        for (let i = 0; i < fragments.length; i++) {
+          let f = fragments[i];
+          if (f.collected) continue;
+          if (Math.hypot(player.x - f.x, player.y - f.y) < 45) collectFragment(i);
+        }
+      }
+      function updateEchoes() { for (let i = echoes.length - 1; i >= 0; i--) if (!echoes[i].update()) echoes.splice(i, 1); }
+
+      function render() {
+        ctx.save();
+        if (endingActive && !enteredDoor && fragmentsCollected === TOTAL_FRAGMENTS && fallOffset > 0) {
+          ctx.translate(0, fallOffset * 580);
+        }
+        drawBackground();
+        updateStardust();
+        drawRippedSky();
+        drawFragmentsAndTrails();
+        addFeathers();
+        addRoseAndLeaves();
+        for (let e of echoes) e.draw();
+        drawPlayer();
+        drawBirthSun();
+        drawPoemScroll();
+        ctx.restore();
+      }
+
+      function animate() {
+        updateProgress();
+        updateMovement();
+        updateEchoes();
+        updateWorldFall();
+        render();
+        animFrame = requestAnimationFrame(animate);
+      }
+
+      function initFragmentsPosition() {
+        let existing = fragments;
+        let newFrags = [];
+        for (let i = 0; i < TOTAL_FRAGMENTS; i++) {
+          if (existing[i] && existing[i].collected) newFrags.push(existing[i]);
+          else newFrags.push({ x: 80 + Math.random() * (width - 160), y: height * 0.45 + Math.random() * (height * 0.45 - 70), collected: false, pulseOff: Math.random() * 6.28 });
+        }
+        fragments = newFrags;
+      }
+
+      function resizeAndInit() {
+        width = window.innerWidth; height = window.innerHeight;
+        canvas.width = width; canvas.height = height;
+        player.x = width / 2; player.y = height * 0.82;
+        initFragmentsPosition(); initStardust();
+      }
+
+      window.addEventListener('resize', () => { resizeAndInit(); });
+      window.addEventListener('keydown', (e) => {
+        let k = e.key.toLowerCase();
+        if (['w', 's', 'a', 'd'].includes(k)) keys[k] = true;
+        if (e.code === 'Space' && !enteredDoor) { e.preventDefault(); echoes.push(new EchoParticle(player.x, player.y)); player.echoVal++; updateUI(); }
+        if (waitingForInput && poemPhase === 3) {
+          waitingForInput = false;
+          dialogDiv.innerHTML = "☀ 回声终将找到光 ☀";
+          dialogDiv.style.opacity = 1;
+          setTimeout(() => { location.reload(); }, 1500);
+        }
+      });
+      window.addEventListener('keyup', (e) => { let k = e.key.toLowerCase(); if (['w', 's', 'a', 'd'].includes(k)) keys[k] = false; });
+
+      resizeAndInit();
+      animate();
+      updateUI();
+    })();
+  </script>
+</body>
+
+</html>
